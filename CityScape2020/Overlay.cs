@@ -1,7 +1,11 @@
-﻿using System;
+﻿// <copyright file="Overlay.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020
 {
+    using System;
+
     internal class Overlay
     {
         private long last;
@@ -11,23 +15,22 @@ namespace CityScape2020
 
         public Overlay(long initial)
         {
-            last = initial;
+            this.last = initial;
         }
 
         public void Draw(long elapsed, int polygons)
         {
-            frames++;
+            this.frames++;
             this.elapsed += elapsed - this.last;
-            last = elapsed;
+            this.last = elapsed;
 
             if (this.elapsed > 1000)
             {
-                this.fps = this.frames/(this.elapsed/1000.0f);
+                this.fps = this.frames / (this.elapsed / 1000.0f);
                 this.frames = 0;
                 this.elapsed = 0;
                 Console.WriteLine("{0} fps, {1} polys/frame ({2} kpolys/sec)", this.fps, polygons, (polygons * this.fps) / 1000);
             }
-
         }
     }
 }

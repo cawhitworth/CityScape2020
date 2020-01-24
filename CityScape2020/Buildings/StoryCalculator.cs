@@ -1,9 +1,13 @@
-using System;
-using SharpDX;
+// <copyright file="StoryCalculator.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Buildings
 {
-    class StoryCalculator
+    using System;
+    using SharpDX;
+
+    internal class StoryCalculator
     {
         private readonly Size2 textureSize;
         private readonly Size2 windowSize;
@@ -13,33 +17,34 @@ namespace CityScape2020.Buildings
         {
             this.textureSize = textureSize;
             this.windowSize = windowSize;
-            StorySize = storySize;
-            random = new Random();
+            this.StorySize = storySize;
+            this.random = new Random();
         }
 
         public float StorySize { get; }
 
-        public int StoriesX => textureSize.Width / windowSize.Width;
-        public int StoriesY => textureSize.Height / windowSize.Height;
+        private int StoriesX => this.textureSize.Width / this.windowSize.Width;
+
+        private int StoriesY => this.textureSize.Height / this.windowSize.Height;
 
         public Vector2 RandomPosition()
         {
-            return new Vector2(random.Next(StoriesX), random.Next(StoriesY));
-        }
-
-        public float ToTextureX(int stories)
-        {
-            return stories*((float)windowSize.Width/textureSize.Width);
-        }
-
-        public float ToTextureY(int stories)
-        {
-            return stories*((float)windowSize.Height/textureSize.Height);
+            return new Vector2(this.random.Next(this.StoriesX), this.random.Next(this.StoriesY));
         }
 
         public Vector2 ToTexture(Vector2 p)
         {
-            return new Vector2(ToTextureX((int)p.X), ToTextureY((int)p.Y));
+            return new Vector2(this.ToTextureX((int)p.X), this.ToTextureY((int)p.Y));
+        }
+
+        private float ToTextureX(int stories)
+        {
+            return stories * ((float)this.windowSize.Width / this.textureSize.Width);
+        }
+
+        private float ToTextureY(int stories)
+        {
+            return stories * ((float)this.windowSize.Height / this.textureSize.Height);
         }
     }
 }

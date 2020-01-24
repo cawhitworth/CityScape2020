@@ -1,12 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using CityScape2020.Geometry;
-using SharpDX;
+// <copyright file="ColumnedBuildingBlockBuilder.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Buildings
 {
-    class ColumnedBuildingBlockBuilder
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using CityScape2020.Geometry;
+    using SharpDX;
+
+    internal class ColumnedBuildingBlockBuilder
     {
         private readonly StoryCalculator storyCalculator;
         private readonly ModColor modColor;
@@ -16,67 +20,76 @@ namespace CityScape2020.Buildings
         public ColumnedBuildingBlockBuilder(StoryCalculator storyCalculator, Func<int, IEnumerable<int>> generateColumns = null)
         {
             this.storyCalculator = storyCalculator;
-            random = new Random();
-            modColor = new ModColor(random);
-            if (generateColumns == null)
-                generateColumns = GenerateColumns;
-            this.generateColumns = generateColumns;
+            this.random = new Random();
+            this.modColor = new ModColor(this.random);
+
+            this.generateColumns = generateColumns ?? this.GenerateColumns;
         }
 
         public IGeometry Build(Vector3 c1, int xStories, int yStories, int zStories)
         {
-            var c2 = new Vector3(c1.X + xStories*storyCalculator.StorySize, c1.Y + yStories*storyCalculator.StorySize,
-                c1.Z + zStories*storyCalculator.StorySize);
+            var c2 = new Vector3(
+                c1.X + (xStories * this.storyCalculator.StorySize),
+                c1.Y + (yStories * this.storyCalculator.StorySize),
+                c1.Z + (zStories * this.storyCalculator.StorySize));
 
-            var mod = modColor.Pick();
+            var mod = this.modColor.Pick();
 
-            var storyWidthsX = generateColumns(xStories).ToArray();
-            var storyWidthsZ = generateColumns(zStories).ToArray();
+            var storyWidthsX = this.generateColumns(xStories).ToArray();
+            var storyWidthsZ = this.generateColumns(zStories).ToArray();
 
-            var front = new ColumnedPanel(c1, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.Out, mod, storyCalculator);
-            var back = new ColumnedPanel(c2, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.In, mod, storyCalculator);
+            var front = new ColumnedPanel(c1, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.Out, mod, this.storyCalculator);
+            var back = new ColumnedPanel(c2, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.In, mod, this.storyCalculator);
 
-            var right = new ColumnedPanel(new Vector3(c2.X, c1.Y, c1.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.Out, mod, storyCalculator);
-            var left = new ColumnedPanel(new Vector3(c1.X, c2.Y, c2.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.In, mod, storyCalculator);
+            var right = new ColumnedPanel(new Vector3(c2.X, c1.Y, c1.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.Out, mod, this.storyCalculator);
+            var left = new ColumnedPanel(new Vector3(c1.X, c2.Y, c2.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.In, mod, this.storyCalculator);
 
-            var tx1 = new Vector2(0,0);
+            var tx1 = new Vector2(0, 0);
 
-            var top = new Panel(new Vector3(c1.X, c2.Y, c1.Z), new Vector2(c2.X - c1.X, c2.Z - c1.Z), Panel.Plane.XZ,
-                Panel.Facing.Out, tx1, tx1, mod);
+            var top = new Panel(
+                new Vector3(c1.X, c2.Y, c1.Z),
+                new Vector2(c2.X - c1.X, c2.Z - c1.Z),
+                Panel.Plane.XZ,
+                Panel.Facing.Out,
+                tx1,
+                tx1,
+                mod);
 
-            var aggregate = new AggregateGeometry(front, back, right, left, top );
+            var aggregate = new AggregateGeometry(front, back, right, left, top);
 
             return aggregate;
         }
 
-        IEnumerable<int> GenerateColumns(int width)
+        private IEnumerable<int> GenerateColumns(int width)
         {
-            var spacer = new bool[width];
+            var spacers = new bool[width];
             var offset = 0;
             while (offset < width / 2)
             {
-                offset += random.Next((width / 3)) + 2;
+                offset += this.random.Next(width / 3) + 2;
                 if (offset >= width / 2)
-                    break;
-
-                spacer[offset] = true;
-                spacer[(width - 1) - offset] = true;
-
-                if (random.Next(2) == 1)
                 {
-                    spacer[offset+1] = true;
-                    spacer[(width - 1) - (offset + 1)] = true;
+                    break;
+                }
+
+                spacers[offset] = true;
+                spacers[(width - 1) - offset] = true;
+
+                if (this.random.Next(2) == 1)
+                {
+                    spacers[offset + 1] = true;
+                    spacers[(width - 1) - (offset + 1)] = true;
                     offset += 1;
                 }
             }
 
             var w = 0;
             var window = true;
-            foreach (var b in spacer)
+            foreach (var isSpacer in spacers)
             {
                 if (window)
                 {
-                    if (b)
+                    if (isSpacer)
                     {
                         yield return w;
                         window = false;
@@ -89,7 +102,7 @@ namespace CityScape2020.Buildings
                 }
                 else
                 {
-                    if (b)
+                    if (isSpacer)
                     {
                         w += 1;
                     }
@@ -101,6 +114,7 @@ namespace CityScape2020.Buildings
                     }
                 }
             }
+
             yield return w;
         }
     }

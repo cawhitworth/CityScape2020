@@ -1,27 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// <copyright file="Component.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020
 {
+    using System;
+    using System.Collections.Generic;
+
     internal class Component : IDisposable
     {
-        List<IDisposable> disposables = new List<IDisposable>();
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
 
         public void Dispose()
         {
-            foreach(var disposable in disposables)
+            foreach (var disposable in this.disposables)
             {
                 disposable.Dispose();
             }
-            disposables.Clear();
+
+            this.disposables.Clear();
         }
 
-        protected T ToDispose<T>(T disposable) where T : class, IDisposable
+        protected T ToDispose<T>(T disposable)
+            where T : class, IDisposable
         {
             this.disposables.Add(disposable);
 
             return disposable;
         }
-
     }
 }

@@ -1,10 +1,13 @@
-﻿using System.IO;
-using SharpDX;
-using SharpDX.Direct3D11;
+﻿// <copyright file="PixelTextureLightShader.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Rendering
 {
-    class PixelTextureLightShader : Component
+    using System.IO;
+    using SharpDX.Direct3D11;
+
+    internal class PixelTextureLightShader : Component
     {
         private readonly Texture texture;
         private readonly PixelShader pixelShader;
@@ -13,13 +16,13 @@ namespace CityScape2020.Rendering
         {
             this.texture = texture;
             var pixelShaderBytecode = File.ReadAllBytes("PixelShader.cso");
-            pixelShader = ToDispose(new PixelShader(device, pixelShaderBytecode));
+            this.pixelShader = this.ToDispose(new PixelShader(device, pixelShaderBytecode));
         }
 
         public void Bind(DeviceContext context)
         {
-            context.PixelShader.Set(pixelShader);
-            texture.Bind(context, 0);
+            context.PixelShader.Set(this.pixelShader);
+            this.texture.Bind(context, 0);
         }
     }
 }

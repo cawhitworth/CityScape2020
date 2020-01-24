@@ -1,108 +1,120 @@
-﻿using System;
-using System.Collections.Generic;
-using CityScape2020.Rendering;
-using SharpDX;
+﻿// <copyright file="Panel.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using CityScape2020.Rendering;
+    using SharpDX;
+
     public class Panel : IGeometry
     {
-        public enum Plane
-        {
-            XY,
-            YZ,
-            XZ
-        };
-
-        public enum Facing
-        {
-            In, Out
-        }
-
         private readonly Vector3 position;
         private readonly Vector2 size;
         private readonly Plane plane;
         private readonly Facing facing;
-        private readonly Vector2 texCoord1;
-        private readonly Vector2 texCoord2;
+        private readonly Vector2 texBottomLeft;
+        private readonly Vector2 texTopRight;
         private readonly ushort[] indices;
         private readonly VertexPosNormalTextureMod[] vertices;
         private readonly Vector3 colorMod;
 
-        public Panel(Vector3 position, Vector2 size, Plane plane, Facing facing, Vector2 tex1, Vector2 tex2, Color mod)
+        public Panel(Vector3 position, Vector2 size, Plane plane, Facing facing, Vector2 texBottomLeft, Vector2 texTopRight, Color mod)
         {
             this.position = position;
             this.size = size;
             this.plane = plane;
             this.facing = facing;
-            texCoord1 = tex1;
-            texCoord2 = tex2;
-            colorMod = new Vector3(mod.R / 255.0f, mod.G / 255.0f, mod.B / 255.0f);
+            this.texBottomLeft = texBottomLeft;
+            this.texTopRight = texTopRight;
+            this.colorMod = new Vector3(mod.R / 255.0f, mod.G / 255.0f, mod.B / 255.0f);
 
             if (this.facing == Facing.Out)
             {
                 this.indices = new ushort[]
                 {
-                    0, 1, 2, 1, 3, 2
+                    0, 1, 2, 1, 3, 2,
                 };
             }
             else
             {
                 this.indices = new ushort[]
                 {
-                    0, 2, 1, 3, 1, 2
+                    0, 2, 1, 3, 1, 2,
                 };
             }
-            vertices = CalculateVertices();
+
+            this.vertices = this.CalculateVertices();
         }
 
-        public IEnumerable<VertexPosNormalTextureMod> Vertices => vertices;
+        public enum Plane
+        {
+            XY,
+            YZ,
+            XZ,
+        }
 
-        public IEnumerable<ushort> Indices => indices;
+        public enum Facing
+        {
+            In,
+            Out,
+        }
+
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => this.vertices;
+
+        public IEnumerable<ushort> Indices => this.indices;
 
         private VertexPosNormalTextureMod[] CalculateVertices()
         {
             Vector3 normal;
             Vector3 offsetVector, oppositeCorner, topLeft, bottomRight;
-            switch (plane)
+
+            switch (this.plane)
             {
                 case Plane.XY:
-                    offsetVector = new Vector3(size.X, size.Y, 0.0f);
-                    oppositeCorner = position + offsetVector;
-                    topLeft = new Vector3(position.X, oppositeCorner.Y, position.Z);
-                    bottomRight = new Vector3(oppositeCorner.X, position.Y, position.Z);
+                    offsetVector = new Vector3(this.size.X, this.size.Y, 0.0f);
+                    oppositeCorner = this.position + offsetVector;
+                    topLeft = new Vector3(this.position.X, oppositeCorner.Y, this.position.Z);
+                    bottomRight = new Vector3(oppositeCorner.X, this.position.Y, this.position.Z);
                     normal = new Vector3(0, 0, -1);
                     break;
+
                 case Plane.YZ:
-                    offsetVector = new Vector3(0.0f, size.Y, size.X);
-                    oppositeCorner = position + offsetVector;
-                    topLeft = new Vector3(position.X, oppositeCorner.Y, position.Z);
-                    bottomRight = new Vector3(position.X, position.Y, oppositeCorner.Z);
+                    offsetVector = new Vector3(0.0f, this.size.Y, this.size.X);
+                    oppositeCorner = this.position + offsetVector;
+                    topLeft = new Vector3(this.position.X, oppositeCorner.Y, this.position.Z);
+                    bottomRight = new Vector3(this.position.X, this.position.Y, oppositeCorner.Z);
                     normal = new Vector3(1, 0, 0);
                     break;
+
                 case Plane.XZ:
-                    offsetVector = new Vector3(size.X, 0.0f, size.Y);
-                    oppositeCorner = position + offsetVector;
-                    topLeft = new Vector3(position.X, position.Y, oppositeCorner.Z);
-                    bottomRight = new Vector3(oppositeCorner.X, position.Y, position.Z);
+                    offsetVector = new Vector3(this.size.X, 0.0f, this.size.Y);
+                    oppositeCorner = this.position + offsetVector;
+                    topLeft = new Vector3(this.position.X, this.position.Y, oppositeCorner.Z);
+                    bottomRight = new Vector3(oppositeCorner.X, this.position.Y, this.position.Z);
                     normal = new Vector3(0, 1, 0);
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (facing == Facing.In)
+            if (this.facing == Facing.In)
+            {
                 normal *= -1;
+            }
 
-            var texTopLeft = new Vector2(texCoord1.X, texCoord2.Y);
-            var texBottomRight = new Vector2(texCoord2.X, texCoord1.Y);
+            var texTopLeft = new Vector2(this.texBottomLeft.X, this.texTopRight.Y);
+            var texBottomRight = new Vector2(this.texTopRight.X, this.texBottomLeft.Y);
 
             return new[]
             {
-                new VertexPosNormalTextureMod(position, normal, texCoord1, colorMod),
-                new VertexPosNormalTextureMod(topLeft, normal, texTopLeft, colorMod),
-                new VertexPosNormalTextureMod(bottomRight, normal, texBottomRight, colorMod),
-                new VertexPosNormalTextureMod(oppositeCorner, normal, texCoord2, colorMod)
+                new VertexPosNormalTextureMod(this.position, normal, this.texBottomLeft, this.colorMod),
+                new VertexPosNormalTextureMod(topLeft, normal, texTopLeft, this.colorMod),
+                new VertexPosNormalTextureMod(bottomRight, normal, texBottomRight, this.colorMod),
+                new VertexPosNormalTextureMod(oppositeCorner, normal, this.texTopRight, this.colorMod),
             };
         }
     }

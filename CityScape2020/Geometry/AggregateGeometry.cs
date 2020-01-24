@@ -1,23 +1,31 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CityScape2020.Rendering;
+﻿// <copyright file="AggregateGeometry.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Geometry
 {
-    class AggregateGeometry : IGeometry
+    using System.Collections.Generic;
+    using System.Linq;
+    using CityScape2020.Rendering;
+
+    internal class AggregateGeometry : IGeometry
     {
         private ushort[] indices;
         private VertexPosNormalTextureMod[] vertices;
 
         public AggregateGeometry(params IGeometry[] geometries)
         {
-            Aggregate(geometries);
+            this.Aggregate(geometries);
         }
 
         public AggregateGeometry(IEnumerable<IGeometry> geometries)
         {
-            Aggregate(geometries);
+            this.Aggregate(geometries);
         }
+
+        public IEnumerable<ushort> Indices => this.indices;
+
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => this.vertices;
 
         private void Aggregate(IEnumerable<IGeometry> geometries)
         {
@@ -27,15 +35,13 @@ namespace CityScape2020.Geometry
 
             foreach (var geometry in geometries)
             {
-                allIndices.AddRange(geometry.Indices.Select(i => (ushort) (i + baseIndex)));
+                allIndices.AddRange(geometry.Indices.Select(i => (ushort)(i + baseIndex)));
                 allVertices.AddRange(geometry.Vertices);
                 baseIndex += (ushort)geometry.Vertices.Count();
             }
-            indices = allIndices.ToArray();
-            vertices = allVertices.ToArray();
-        }
 
-        public IEnumerable<ushort> Indices => indices;
-        public IEnumerable<VertexPosNormalTextureMod> Vertices => vertices;
+            this.indices = allIndices.ToArray();
+            this.vertices = allVertices.ToArray();
+        }
     }
 }

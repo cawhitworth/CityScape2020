@@ -1,16 +1,27 @@
-using System;
-using System.Collections.Generic;
-using CityScape2020.Buildings;
-using CityScape2020.Rendering;
-using SharpDX;
+// <copyright file="ColumnedPanel.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Geometry
 {
-    class ColumnedPanel : IGeometry
+    using System;
+    using System.Collections.Generic;
+    using CityScape2020.Buildings;
+    using CityScape2020.Rendering;
+    using SharpDX;
+
+    internal class ColumnedPanel : IGeometry
     {
         private readonly IGeometry aggregate;
 
-        public ColumnedPanel(Vector3 position, int storiesHigh, IEnumerable<int> storyWidths, Panel.Plane plane, Panel.Facing facing, Color mod, StoryCalculator storyCalc)
+        public ColumnedPanel(
+            Vector3 position,
+            int storiesHigh,
+            IEnumerable<int> storyWidths,
+            Panel.Plane plane,
+            Panel.Facing facing,
+            Color mod,
+            StoryCalculator storyCalc)
         {
             var panels = new List<IGeometry>();
 
@@ -26,9 +37,10 @@ namespace CityScape2020.Geometry
                     tx1 = origin;
                     tx2 = origin;
                 }
+
                 var direction = facing == Panel.Facing.Out ? 1.0f : -1.0f;
 
-                var size = new Vector2(width*storyCalc.StorySize * direction, storiesHigh*storyCalc.StorySize * direction);
+                var size = new Vector2(width * storyCalc.StorySize * direction, storiesHigh * storyCalc.StorySize * direction);
                 panels.Add(new Panel(position, size, plane, facing, storyCalc.ToTexture(tx1), storyCalc.ToTexture(tx2), mod));
 
                 switch (plane)
@@ -47,11 +59,11 @@ namespace CityScape2020.Geometry
                 textured = !textured;
             }
 
-            aggregate = new AggregateGeometry(panels);
+            this.aggregate = new AggregateGeometry(panels);
         }
 
-        public IEnumerable<ushort> Indices => aggregate.Indices;
+        public IEnumerable<ushort> Indices => this.aggregate.Indices;
 
-        public IEnumerable<VertexPosNormalTextureMod> Vertices => aggregate.Vertices;
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => this.aggregate.Vertices;
     }
 }

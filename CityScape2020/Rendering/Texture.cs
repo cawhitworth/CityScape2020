@@ -1,18 +1,22 @@
-using SharpDX;
-using SharpDX.Direct3D11;
+// <copyright file="Texture.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Rendering
 {
-    class Texture : Component
+    using SharpDX;
+    using SharpDX.Direct3D11;
+
+    internal class Texture : Component
     {
         private readonly ShaderResourceView textureView;
         private readonly SamplerState samplerState;
 
         private Texture(Texture2D t2D, Device device)
         {
-            Texture2D texture = ToDispose(t2D);
-            textureView = ToDispose(new ShaderResourceView(device, texture));
-            samplerState = ToDispose(new SamplerState(device, new SamplerStateDescription
+            Texture2D texture = this.ToDispose(t2D);
+            this.textureView = this.ToDispose(new ShaderResourceView(device, texture));
+            this.samplerState = this.ToDispose(new SamplerState(device, new SamplerStateDescription
             {
                 Filter = Filter.MinMagMipLinear,
                 AddressU = TextureAddressMode.Wrap,
@@ -23,7 +27,7 @@ namespace CityScape2020.Rendering
                 MaximumAnisotropy = 16,
                 MipLodBias = 0,
                 MinimumLod = 0,
-                MaximumLod = float.MaxValue
+                MaximumLod = float.MaxValue,
             }));
         }
 
@@ -34,8 +38,8 @@ namespace CityScape2020.Rendering
 
         public void Bind(DeviceContext context, int slot)
         {
-            context.PixelShader.SetSampler(slot, samplerState);
-            context.PixelShader.SetShaderResource(slot, textureView);
+            context.PixelShader.SetSampler(slot, this.samplerState);
+            context.PixelShader.SetShaderResource(slot, this.textureView);
         }
     }
 }

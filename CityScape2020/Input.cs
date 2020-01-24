@@ -1,10 +1,14 @@
-﻿using System;
-using SharpDX;
-using SharpDX.DirectInput;
+﻿// <copyright file="Input.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020
 {
-    class Input : IInput, IDisposable
+    using System;
+    using SharpDX;
+    using SharpDX.DirectInput;
+
+    internal class Input : IInput, IDisposable
     {
         private readonly DirectInput input = new DirectInput();
         private readonly Mouse mouse;
@@ -15,55 +19,84 @@ namespace CityScape2020
 
         public Input(IntPtr windowHandle)
         {
-            mouse = new Mouse(input);
-            keyboard = new Keyboard(input);
-            keyboard.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
+            this.mouse = new Mouse(this.input);
+            this.keyboard = new Keyboard(this.input);
+            this.keyboard.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
 
-            mouse.Properties.AxisMode = DeviceAxisMode.Relative;
-            mouse.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
-
+            this.mouse.Properties.AxisMode = DeviceAxisMode.Relative;
+            this.mouse.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
         }
 
         public void Update()
         {
             try
             {
-                keyboardState = new KeyboardState();
-                keyboard.GetCurrentState(ref keyboardState);
+                this.keyboardState = new KeyboardState();
+                this.keyboard.GetCurrentState(ref this.keyboardState);
             }
             catch
             {
-                keyboardState = null;
+                this.keyboardState = null;
             }
 
-            if (keyboardState == null)
-                TryAcquireKeyboard();
+            if (this.keyboardState == null)
+            {
+                this.TryAcquireKeyboard();
+            }
 
             try
             {
-                mouseState = new MouseState();
-                mouse.GetCurrentState(ref mouseState);
-                mousePosition.X = mouseState.X;
-                mousePosition.Y = mouseState.Y;
+                this.mouseState = new MouseState();
+                this.mouse.GetCurrentState(ref this.mouseState);
+                this.mousePosition.X = this.mouseState.X;
+                this.mousePosition.Y = this.mouseState.Y;
             }
             catch
             {
-                mouseState = null;
+                this.mouseState = null;
             }
 
-            if (mouseState == null)
-                TryAcquireMouse();
+            if (this.mouseState == null)
+            {
+                this.TryAcquireMouse();
+            }
+        }
+
+        public bool IsKeyDown(Key key)
+        {
+            return this.keyboardState != null && this.keyboardState.IsPressed(key);
+        }
+
+        public bool IsKeyUp(Key key)
+        {
+            return this.keyboardState != null && !this.keyboardState.IsPressed(key);
+        }
+
+        public Vector2 MousePosition()
+        {
+            return this.mousePosition;
+        }
+
+        public void Dispose()
+        {
+            this.mouse.Unacquire();
+            this.mouse.Dispose();
+
+            this.keyboard.Unacquire();
+            this.keyboard.Dispose();
+
+            this.input.Dispose();
         }
 
         private void TryAcquireKeyboard()
         {
             try
             {
-                keyboard.Acquire();
+                this.keyboard.Acquire();
             }
             catch
             {
-                keyboardState = null;
+                this.keyboardState = null;
             }
         }
 
@@ -71,38 +104,12 @@ namespace CityScape2020
         {
             try
             {
-                mouse.Acquire();
+                this.mouse.Acquire();
             }
             catch
             {
-                mouseState = null;
+                this.mouseState = null;
             }
-        }
-
-        public bool IsKeyDown(Key key)
-        {
-            return keyboardState != null && keyboardState.IsPressed(key);
-        }
-
-        public bool IsKeyUp(Key key)
-        {
-            return keyboardState != null && !keyboardState.IsPressed(key);
-        }
-
-        public Vector2 MousePosition()
-        {
-            return mousePosition;
-        }
-
-        public void Dispose()
-        {
-            mouse.Unacquire();
-            mouse.Dispose();
-            
-            keyboard.Unacquire();
-            keyboard.Dispose();
-
-            input.Dispose();
         }
     }
 }

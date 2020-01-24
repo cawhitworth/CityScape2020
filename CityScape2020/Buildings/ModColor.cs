@@ -1,9 +1,13 @@
-using System;
-using SharpDX;
+// <copyright file="ModColor.cs" company="Chris Whitworth">
+// Copyright (c) Chris Whitworth. All rights reserved.
+// </copyright>
 
 namespace CityScape2020.Buildings
 {
-    class ModColor
+    using System;
+    using SharpDX;
+
+    internal class ModColor
     {
         private readonly Random random;
 
@@ -15,7 +19,7 @@ namespace CityScape2020.Buildings
         public Color Pick()
         {
             Color mod;
-            switch (random.Next(3))
+            switch (this.random.Next(3))
             {
                 case 0:
                     mod = new Color(1.0f, 1.0f, 0.8f, 1.0f);
@@ -27,6 +31,7 @@ namespace CityScape2020.Buildings
                     mod = new Color(1.0f, 1.0f, 1.0f, 1.0f);
                     break;
             }
+
             return mod;
         }
     }
