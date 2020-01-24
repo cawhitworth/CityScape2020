@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CityScape2.Geometry;
+using CityScape2020.Geometry;
 using SharpDX;
 
-namespace CityScape2.Buildings
+namespace CityScape2020.Buildings
 {
     class ColumnedBuildingBlockBuilder
     {

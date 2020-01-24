@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CityScape2.Rendering;
+using CityScape2020.Rendering;
 using SharpDX;
 
-namespace CityScape2.Geometry
+namespace CityScape2020.Geometry
 {
     public class Panel : IGeometry
     {

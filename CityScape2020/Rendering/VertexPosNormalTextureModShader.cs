@@ -5,7 +5,7 @@ using SharpDX.DXGI;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 
-namespace CityScape2.Rendering
+namespace CityScape2020.Rendering
 {
     class VertexPosNormalTextureModShader : Component
     {

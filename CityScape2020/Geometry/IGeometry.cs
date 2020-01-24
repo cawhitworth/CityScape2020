@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CityScape2.Rendering;
+using CityScape2020.Rendering;
 
-namespace CityScape2.Geometry
+namespace CityScape2020.Geometry
 {
     internal interface IGeometry
     {

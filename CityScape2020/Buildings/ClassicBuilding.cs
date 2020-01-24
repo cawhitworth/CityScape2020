@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms.VisualStyles;
-using CityScape2.Geometry;
-using CityScape2.Rendering;
+using CityScape2020.Geometry;
+using CityScape2020.Rendering;
 using SharpDX;
 
-namespace CityScape2.Buildings
+namespace CityScape2020.Buildings
 {
     class ClassicBuilding : IGeometry
     {

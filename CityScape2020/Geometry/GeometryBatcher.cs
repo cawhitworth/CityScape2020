@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CityScape2.Rendering;
+using CityScape2020.Rendering;
 
-namespace CityScape2.Geometry
+namespace CityScape2020.Geometry
 {
     class GeometryBatcher : IGeometryBatcher
     {

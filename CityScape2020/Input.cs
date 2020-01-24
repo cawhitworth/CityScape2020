@@ -2,7 +2,7 @@
 using SharpDX;
 using SharpDX.DirectInput;
 
-namespace CityScape2
+namespace CityScape2020
 {
     class Input : IInput, IDisposable
     {

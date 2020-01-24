@@ -9,7 +9,7 @@ using Color = SharpDX.Color;
 using Device = SharpDX.Direct3D11.Device;
 using Resource = SharpDX.Direct3D11.Resource;
 
-namespace CityScape2
+namespace CityScape2020
 {
     internal class App: Component
     {

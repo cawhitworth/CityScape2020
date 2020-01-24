@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
-using CityScape2.Geometry;
+using CityScape2020.Geometry;
 using SharpDX;
 
-namespace CityScape2.Buildings
+namespace CityScape2020.Buildings
 {
     class BuildingBlockBuilder
     {

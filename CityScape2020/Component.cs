@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CityScape2
+namespace CityScape2020
 {
     internal class Component : IDisposable
     {

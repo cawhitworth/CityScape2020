@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using CityScape2.Buildings;
-using CityScape2.Geometry;
-using CityScape2.Rendering;
+using CityScape2020.Buildings;
+using CityScape2020.Geometry;
+using CityScape2020.Rendering;
 using SharpDX;
 using SharpDX.Direct3D11;
 using Device = SharpDX.Direct3D11.Device;
 
-namespace CityScape2
+namespace CityScape2020
 {
     class City : Component
     {

@@ -93,6 +93,7 @@
 $(ProjectDir)Shaders\fxc /T vs_4_0_level_9_1 $(ProjectDir)Shaders\VertexShader.hlsl /Fo VertexShader.cso</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)texture.png $(ProjectDir)$(OutDir)texture.png</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
