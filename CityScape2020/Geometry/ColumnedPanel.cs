@@ -8,7 +8,7 @@ namespace CityScape2020.Geometry
 {
     class ColumnedPanel : IGeometry
     {
-        private readonly IGeometry m_Aggregate;
+        private readonly IGeometry aggregate;
 
         public ColumnedPanel(Vector3 position, int storiesHigh, IEnumerable<int> storyWidths, Panel.Plane plane, Panel.Facing facing, Color mod, StoryCalculator storyCalc)
         {
@@ -47,17 +47,11 @@ namespace CityScape2020.Geometry
                 textured = !textured;
             }
 
-            m_Aggregate = new AggregateGeometry(panels);
+            aggregate = new AggregateGeometry(panels);
         }
 
-        public IEnumerable<ushort> Indices
-        {
-            get { return m_Aggregate.Indices; }
-        }
+        public IEnumerable<ushort> Indices => aggregate.Indices;
 
-        public IEnumerable<VertexPosNormalTextureMod> Vertices
-        {
-            get { return m_Aggregate.Vertices; }
-        }
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => aggregate.Vertices;
     }
 }

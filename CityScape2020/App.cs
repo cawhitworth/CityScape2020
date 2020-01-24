@@ -11,31 +11,31 @@ using Resource = SharpDX.Direct3D11.Resource;
 
 namespace CityScape2020
 {
-    internal class App: Component
+    internal class App : Component
     {
-        private RenderForm m_Form;
-        private Device m_Device;
-        private SwapChain m_SwapChain;
-        private DeviceContext m_Context;
-        private Texture2D m_BackBuffer;
-        private RenderTargetView m_RenderView;
-        private Texture2D m_DepthBuffer;
-        private DepthStencilView m_DepthView;
-        private Factory m_Factory;
+        private RenderForm form;
+        private Device device;
+        private SwapChain swapChain;
+        private DeviceContext deviceContext;
+        private Texture2D backBuffer;
+        private RenderTargetView renderTargetView;
+        private Texture2D depthBuffer;
+        private DepthStencilView depthStencilView;
+        private Factory dxgiFactory;
 
         public void Run()
         {
             CreateDeviceAndSwapChain();
 
             var recreate = true;
-            m_Form.Resize += (sender, args) => recreate = true;
+            form.Resize += (sender, args) => recreate = true;
 
             RecreateBuffers();
 
-            var input = new Input(m_Form.Handle);
+            var input = new Input(form.Handle);
             var camera = new Camera(input, Width, Height);
 
-            var city = new City(m_Device, m_Context);
+            var city = new City(device, deviceContext);
 
             var proj = Matrix.Identity;
 
@@ -44,14 +44,13 @@ namespace CityScape2020
             var overlay = new Overlay(clock.ElapsedMilliseconds);
 
             var clearColor = new Color(0.1f, 0.1f, 0.2f, 0.0f);
-            RenderLoop.Run(m_Form, () =>
+
+            RenderLoop.Run(form, () =>
             {   
 
-// ReSharper disable AccessToDisposedClosure
                 input.Update();
                 if (input.IsKeyDown(Key.Escape))
-                    m_Form.Close();
-// ReSharper restore AccessToDisposedClosure
+                    form.Close();
 
                 camera.Update(clock.ElapsedMilliseconds);
                 var view = camera.View;
@@ -67,13 +66,13 @@ namespace CityScape2020
                     recreate = false;
                 }
 
-                m_Context.ClearDepthStencilView(m_DepthView, DepthStencilClearFlags.Depth, 1.0f, 0);
-                m_Context.ClearRenderTargetView(m_RenderView, clearColor);
+                deviceContext.ClearDepthStencilView(depthStencilView, DepthStencilClearFlags.Depth, 1.0f, 0);
+                deviceContext.ClearRenderTargetView(renderTargetView, clearColor);
 
                 var polys = city.Draw(clock.ElapsedMilliseconds, view, proj);
                 overlay.Draw(clock.ElapsedMilliseconds, polys);
 
-                m_SwapChain.Present(0, PresentFlags.None);
+                swapChain.Present(0, PresentFlags.None);
             });
 
             input.Dispose();
@@ -81,23 +80,16 @@ namespace CityScape2020
             Dispose();
         }
 
+        private int Width => form.ClientSize.Width;
 
-        private int Width
-        {
-            get { return m_Form.ClientSize.Width; }
-        }
-
-        private int Height
-        {
-            get { return m_Form.ClientSize.Height; }
-        }
+        private int Height => form.ClientSize.Height;
 
         private void CreateDeviceAndSwapChain()
         {
-            m_Form = ToDispose(new RenderForm());
+            form = ToDispose(new RenderForm());
 
-            m_Form.Width = 1280;
-            m_Form.Height = 800;
+            form.Width = 1280;
+            form.Height = 800;
 
             var desc = new SwapChainDescription
             {
@@ -105,41 +97,41 @@ namespace CityScape2020
                 IsWindowed = true,
                 ModeDescription =
                     new ModeDescription(Width, Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
-                OutputHandle = m_Form.Handle,
+                OutputHandle = form.Handle,
                 SampleDescription = new SampleDescription(1, 0),
                 SwapEffect = SwapEffect.Discard,
                 Usage = Usage.RenderTargetOutput
             };
 
             // Create device + swapchain
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.Debug, desc, out m_Device, out m_SwapChain);
-            m_Context = ToDispose(m_Device.ImmediateContext);
-            m_Device = ToDispose(m_Device);
-            m_SwapChain = ToDispose(m_SwapChain);
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.Debug, desc, out device, out swapChain);
+            deviceContext = ToDispose(device.ImmediateContext);
+            device = ToDispose(device);
+            swapChain = ToDispose(swapChain);
 
             // Ignore Windows events
-            m_Factory = ToDispose(m_SwapChain.GetParent<Factory>());
-            m_Factory.MakeWindowAssociation(m_Form.Handle, WindowAssociationFlags.IgnoreAll);
+            dxgiFactory = ToDispose(swapChain.GetParent<Factory>());
+            dxgiFactory.MakeWindowAssociation(form.Handle, WindowAssociationFlags.IgnoreAll);
         }
 
         private void DisposeBuffers()
         {
-            m_DepthView.Dispose();
-            m_DepthBuffer.Dispose();
-            m_RenderView.Dispose();
-            m_BackBuffer.Dispose();
+            depthStencilView.Dispose();
+            depthBuffer.Dispose();
+            renderTargetView.Dispose();
+            backBuffer.Dispose();
         }
 
         private void RecreateBuffers()
         {
-            Utilities.Dispose(ref m_BackBuffer);
-            Utilities.Dispose(ref m_RenderView);
-            Utilities.Dispose(ref m_DepthBuffer);
-            Utilities.Dispose(ref m_DepthView);
+            Utilities.Dispose(ref backBuffer);
+            Utilities.Dispose(ref renderTargetView);
+            Utilities.Dispose(ref depthBuffer);
+            Utilities.Dispose(ref depthStencilView);
 
-            m_BackBuffer = Resource.FromSwapChain<Texture2D>(m_SwapChain, 0);
-            m_RenderView = new RenderTargetView(m_Device, m_BackBuffer);
-            m_DepthBuffer = new Texture2D(m_Device, new Texture2DDescription
+            backBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
+            renderTargetView = new RenderTargetView(device, backBuffer);
+            depthBuffer = new Texture2D(device, new Texture2DDescription
             {
                 Format = Format.D24_UNorm_S8_UInt,
                 ArraySize = 1,
@@ -152,9 +144,9 @@ namespace CityScape2020
                 CpuAccessFlags = CpuAccessFlags.None,
                 OptionFlags = ResourceOptionFlags.None
             });
-            m_DepthView = new DepthStencilView(m_Device, m_DepthBuffer);
+            depthStencilView = new DepthStencilView(device, depthBuffer);
 
-            m_Context.Rasterizer.State = new RasterizerState(m_Device, new RasterizerStateDescription
+            deviceContext.Rasterizer.State = new RasterizerState(device, new RasterizerStateDescription
             {
                 FillMode = FillMode.Solid,
                 CullMode = CullMode.Back,
@@ -166,10 +158,10 @@ namespace CityScape2020
                 IsScissorEnabled = false,
                 IsMultisampleEnabled = false,
                 IsAntialiasedLineEnabled = false
-
             });
-            m_Context.Rasterizer.SetViewport(new Viewport(0, 0, Width, Height, 0.0f, 1.0f));
-            m_Context.OutputMerger.SetTargets(m_DepthView, m_RenderView);
+
+            deviceContext.Rasterizer.SetViewport(new Viewport(0, 0, Width, Height, 0.0f, 1.0f));
+            deviceContext.OutputMerger.SetTargets(depthStencilView, renderTargetView);
         }
 
     }

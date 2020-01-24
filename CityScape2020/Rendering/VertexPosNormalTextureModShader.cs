@@ -9,16 +9,15 @@ namespace CityScape2020.Rendering
 {
     class VertexPosNormalTextureModShader : Component
     {
-        private readonly Buffer m_ConstantBuffer;
-        private readonly VertexShader m_VertexShader;
-        private readonly InputLayout m_Layout;
+        private readonly Buffer constantBuffer;
+        private readonly VertexShader vertexShader;
 
         public VertexPosNormalTextureModShader(Device device)
         {
             var vertShaderBytecode = File.ReadAllBytes("VertexShader.cso");
-            m_VertexShader = ToDispose(new VertexShader(device, vertShaderBytecode));
+            vertexShader = ToDispose(new VertexShader(device, vertShaderBytecode));
 
-            m_Layout = ToDispose(new InputLayout(device, vertShaderBytecode, new[]
+            Layout = ToDispose(new InputLayout(device, vertShaderBytecode, new[]
             {
                 new InputElement("POSITION", 0, Format.R32G32B32_Float, 0,0),
                 new InputElement("NORMAL", 0, Format.R32G32B32_Float, 12, 0),
@@ -26,24 +25,24 @@ namespace CityScape2020.Rendering
                 new InputElement("TEXCOORD", 1, Format.R32G32B32_Float, 32, 0) 
             }));
 
-            m_ConstantBuffer =
+            constantBuffer =
                 ToDispose(new Buffer(device, Utilities.SizeOf<Matrix>() * 3, ResourceUsage.Dynamic,
                     BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0));
         }
 
-        public InputLayout Layout { get { return m_Layout; } }
+        public InputLayout Layout { get; }
 
         public void Bind(DeviceContext context, Matrix world, Matrix view, Matrix proj)
         {
-            context.VertexShader.Set(m_VertexShader);
-            context.VertexShader.SetConstantBuffer(0, m_ConstantBuffer);
+            context.VertexShader.Set(vertexShader);
+            context.VertexShader.SetConstantBuffer(0, constantBuffer);
 
             DataStream mappedResource;
-            context.MapSubresource(m_ConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+            context.MapSubresource(constantBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             mappedResource.Write(world);
             mappedResource.Write(view);
             mappedResource.Write(proj);
-            context.UnmapSubresource(m_ConstantBuffer, 0);
+            context.UnmapSubresource(constantBuffer, 0);
         }
     }
 }

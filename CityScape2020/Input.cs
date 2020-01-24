@@ -6,21 +6,21 @@ namespace CityScape2020
 {
     class Input : IInput, IDisposable
     {
-        private readonly DirectInput m_Input = new DirectInput();
-        private readonly Mouse m_Mouse;
-        private readonly Keyboard m_Keyboard;
-        private KeyboardState m_KeyboardState;
-        private MouseState m_MouseState;
-        private Vector2 m_MousePosition;
+        private readonly DirectInput input = new DirectInput();
+        private readonly Mouse mouse;
+        private readonly Keyboard keyboard;
+        private KeyboardState keyboardState;
+        private MouseState mouseState;
+        private Vector2 mousePosition;
 
         public Input(IntPtr windowHandle)
         {
-            m_Mouse = new Mouse(m_Input);
-            m_Keyboard = new Keyboard(m_Input);
-            m_Keyboard.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
+            mouse = new Mouse(input);
+            keyboard = new Keyboard(input);
+            keyboard.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
 
-            m_Mouse.Properties.AxisMode = DeviceAxisMode.Relative;
-            m_Mouse.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
+            mouse.Properties.AxisMode = DeviceAxisMode.Relative;
+            mouse.SetCooperativeLevel(windowHandle, CooperativeLevel.Foreground | CooperativeLevel.Exclusive);
 
         }
 
@@ -28,30 +28,30 @@ namespace CityScape2020
         {
             try
             {
-                m_KeyboardState = new KeyboardState();
-                m_Keyboard.GetCurrentState(ref m_KeyboardState);
+                keyboardState = new KeyboardState();
+                keyboard.GetCurrentState(ref keyboardState);
             }
             catch
             {
-                m_KeyboardState = null;
+                keyboardState = null;
             }
 
-            if (m_KeyboardState == null)
+            if (keyboardState == null)
                 TryAcquireKeyboard();
 
             try
             {
-                m_MouseState = new MouseState();
-                m_Mouse.GetCurrentState(ref m_MouseState);
-                m_MousePosition.X = m_MouseState.X;
-                m_MousePosition.Y = m_MouseState.Y;
+                mouseState = new MouseState();
+                mouse.GetCurrentState(ref mouseState);
+                mousePosition.X = mouseState.X;
+                mousePosition.Y = mouseState.Y;
             }
             catch
             {
-                m_MouseState = null;
+                mouseState = null;
             }
 
-            if (m_MouseState == null)
+            if (mouseState == null)
                 TryAcquireMouse();
         }
 
@@ -59,11 +59,11 @@ namespace CityScape2020
         {
             try
             {
-                m_Keyboard.Acquire();
+                keyboard.Acquire();
             }
             catch
             {
-                m_KeyboardState = null;
+                keyboardState = null;
             }
         }
 
@@ -71,38 +71,38 @@ namespace CityScape2020
         {
             try
             {
-                m_Mouse.Acquire();
+                mouse.Acquire();
             }
             catch
             {
-                m_MouseState = null;
+                mouseState = null;
             }
         }
 
         public bool IsKeyDown(Key key)
         {
-            return m_KeyboardState != null && m_KeyboardState.IsPressed(key);
+            return keyboardState != null && keyboardState.IsPressed(key);
         }
 
         public bool IsKeyUp(Key key)
         {
-            return m_KeyboardState != null && !m_KeyboardState.IsPressed(key);
+            return keyboardState != null && !keyboardState.IsPressed(key);
         }
 
         public Vector2 MousePosition()
         {
-            return m_MousePosition;
+            return mousePosition;
         }
 
         public void Dispose()
         {
-            m_Mouse.Unacquire();
-            m_Mouse.Dispose();
+            mouse.Unacquire();
+            mouse.Dispose();
             
-            m_Keyboard.Unacquire();
-            m_Keyboard.Dispose();
+            keyboard.Unacquire();
+            keyboard.Dispose();
 
-            m_Input.Dispose();
+            input.Dispose();
         }
     }
 }

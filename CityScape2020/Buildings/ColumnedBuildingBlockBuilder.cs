@@ -8,36 +8,36 @@ namespace CityScape2020.Buildings
 {
     class ColumnedBuildingBlockBuilder
     {
-        private readonly StoryCalculator m_StoryCalc;
-        private readonly ModColor m_ModColor;
-        private readonly Random m_Random;
-        private Func<int, IEnumerable<int>> m_GenerateColumns;
+        private readonly StoryCalculator storyCalculator;
+        private readonly ModColor modColor;
+        private readonly Random random;
+        private Func<int, IEnumerable<int>> generateColumns;
 
         public ColumnedBuildingBlockBuilder(StoryCalculator storyCalculator, Func<int, IEnumerable<int>> generateColumns = null)
         {
-            m_StoryCalc = storyCalculator;
-            m_Random = new Random();
-            m_ModColor = new ModColor(m_Random);
+            this.storyCalculator = storyCalculator;
+            random = new Random();
+            modColor = new ModColor(random);
             if (generateColumns == null)
                 generateColumns = GenerateColumns;
-            m_GenerateColumns = generateColumns;
+            this.generateColumns = generateColumns;
         }
 
         public IGeometry Build(Vector3 c1, int xStories, int yStories, int zStories)
         {
-            var c2 = new Vector3(c1.X + xStories*m_StoryCalc.StorySize, c1.Y + yStories*m_StoryCalc.StorySize,
-                c1.Z + zStories*m_StoryCalc.StorySize);
+            var c2 = new Vector3(c1.X + xStories*storyCalculator.StorySize, c1.Y + yStories*storyCalculator.StorySize,
+                c1.Z + zStories*storyCalculator.StorySize);
 
-            var mod = m_ModColor.Pick();
+            var mod = modColor.Pick();
 
-            var storyWidthsX = m_GenerateColumns(xStories).ToArray();
-            var storyWidthsZ = m_GenerateColumns(zStories).ToArray();
+            var storyWidthsX = generateColumns(xStories).ToArray();
+            var storyWidthsZ = generateColumns(zStories).ToArray();
 
-            var front = new ColumnedPanel(c1, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.Out, mod, m_StoryCalc);
-            var back = new ColumnedPanel(c2, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.In, mod, m_StoryCalc);
+            var front = new ColumnedPanel(c1, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.Out, mod, storyCalculator);
+            var back = new ColumnedPanel(c2, yStories, storyWidthsX, Panel.Plane.XY, Panel.Facing.In, mod, storyCalculator);
 
-            var right = new ColumnedPanel(new Vector3(c2.X, c1.Y, c1.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.Out, mod, m_StoryCalc);
-            var left = new ColumnedPanel(new Vector3(c1.X, c2.Y, c2.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.In, mod, m_StoryCalc);
+            var right = new ColumnedPanel(new Vector3(c2.X, c1.Y, c1.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.Out, mod, storyCalculator);
+            var left = new ColumnedPanel(new Vector3(c1.X, c2.Y, c2.Z), yStories, storyWidthsZ, Panel.Plane.YZ, Panel.Facing.In, mod, storyCalculator);
 
             var tx1 = new Vector2(0,0);
 
@@ -55,14 +55,14 @@ namespace CityScape2020.Buildings
             var offset = 0;
             while (offset < width / 2)
             {
-                offset += m_Random.Next((width / 3)) + 2;
+                offset += random.Next((width / 3)) + 2;
                 if (offset >= width / 2)
                     break;
 
                 spacer[offset] = true;
                 spacer[(width - 1) - offset] = true;
 
-                if (m_Random.Next(2) == 1)
+                if (random.Next(2) == 1)
                 {
                     spacer[offset+1] = true;
                     spacer[(width - 1) - (offset + 1)] = true;

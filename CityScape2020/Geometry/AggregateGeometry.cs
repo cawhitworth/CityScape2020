@@ -6,8 +6,8 @@ namespace CityScape2020.Geometry
 {
     class AggregateGeometry : IGeometry
     {
-        private ushort[] m_Indices;
-        private VertexPosNormalTextureMod[] m_Vertices;
+        private ushort[] indices;
+        private VertexPosNormalTextureMod[] vertices;
 
         public AggregateGeometry(params IGeometry[] geometries)
         {
@@ -31,11 +31,11 @@ namespace CityScape2020.Geometry
                 allVertices.AddRange(geometry.Vertices);
                 baseIndex += (ushort)geometry.Vertices.Count();
             }
-            m_Indices = allIndices.ToArray();
-            m_Vertices = allVertices.ToArray();
+            indices = allIndices.ToArray();
+            vertices = allVertices.ToArray();
         }
 
-        public IEnumerable<ushort> Indices { get { return m_Indices; }}
-        public IEnumerable<VertexPosNormalTextureMod> Vertices { get { return m_Vertices; }}
+        public IEnumerable<ushort> Indices => indices;
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => vertices;
     }
 }

@@ -2,30 +2,30 @@
 
 namespace CityScape2020
 {
-    class Overlay
+    internal class Overlay
     {
-        private long m_Last;
-        private int m_Frames;
-        private long m_Elapsed;
-        private float m_FPS;
+        private long last;
+        private int frames;
+        private long elapsed;
+        private float fps;
 
         public Overlay(long initial)
         {
-            m_Last = initial;
+            last = initial;
         }
 
         public void Draw(long elapsed, int polygons)
         {
-            m_Frames++;
-            m_Elapsed += elapsed - m_Last;
-            m_Last = elapsed;
+            frames++;
+            this.elapsed += elapsed - this.last;
+            last = elapsed;
 
-            if (m_Elapsed > 1000)
+            if (this.elapsed > 1000)
             {
-                m_FPS = m_Frames/(m_Elapsed/1000.0f);
-                m_Frames = 0;
-                m_Elapsed = 0;
-                Console.WriteLine("{0} fps, {1} polys/frame ({2} kpolys/sec)", m_FPS, polygons, (polygons * m_FPS) / 1000);
+                this.fps = this.frames/(this.elapsed/1000.0f);
+                this.frames = 0;
+                this.elapsed = 0;
+                Console.WriteLine("{0} fps, {1} polys/frame ({2} kpolys/sec)", this.fps, polygons, (polygons * this.fps) / 1000);
             }
 
         }

@@ -9,14 +9,14 @@ namespace CityScape2020.Buildings
 {
     class ClassicBuilding : IGeometry
     {
-        private AggregateGeometry m_Geometry;
-        private Random m_Random;
+        private AggregateGeometry aggregateGeometry;
+        private Random random;
 
         public ClassicBuilding(Vector3 corner, int widthStories, int heightStories, int depthStories, StoryCalculator storyCalc)
         {
             var builder = new ColumnedBuildingBlockBuilder(storyCalc);
 
-            m_Random = new Random();
+            random = new Random();
             int totalHeight = 0;
 
             var geometry = new List<IGeometry>();
@@ -32,7 +32,7 @@ namespace CityScape2020.Buildings
 
             geometry.Add(new Box(corner, oppCorner));
 
-            var tierScale = 0.6 + (m_Random.NextDouble() * 0.4);
+            var tierScale = 0.6 + (random.NextDouble() * 0.4);
 
             widthStories -= 1;
             depthStories -= 1;
@@ -56,7 +56,7 @@ namespace CityScape2020.Buildings
                     {
                         if (heightStories - totalHeight > totalHeight/3)
                         {
-                            tierHeight = m_Random.Next((heightStories*5)/6) + (heightStories/6);
+                            tierHeight = random.Next((heightStories*5)/6) + (heightStories/6);
                         }
                         else
                         {
@@ -64,8 +64,6 @@ namespace CityScape2020.Buildings
                         }
                     }
                 }
-
-                // Console.WriteLine("Corner {0} size {1},{2} height {3} tierHeight {4} totalheight {5}", corner, widthStories, depthStories, totalHeight, tierHeight, heightStories);
 
                 geometry.Add(builder.Build(corner, widthStories, tierHeight, depthStories));
 
@@ -79,17 +77,11 @@ namespace CityScape2020.Buildings
             }
 
 
-            m_Geometry = new AggregateGeometry(geometry);
+            aggregateGeometry = new AggregateGeometry(geometry);
         }
 
-        public IEnumerable<ushort> Indices
-        {
-            get { return m_Geometry.Indices; }
-        }
+        public IEnumerable<ushort> Indices => aggregateGeometry.Indices;
 
-        public IEnumerable<VertexPosNormalTextureMod> Vertices
-        {
-            get { return m_Geometry.Vertices; }
-        }
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => aggregateGeometry.Vertices;
     }
 }

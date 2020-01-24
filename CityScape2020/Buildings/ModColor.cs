@@ -5,17 +5,17 @@ namespace CityScape2020.Buildings
 {
     class ModColor
     {
-        private readonly Random m_Random;
+        private readonly Random random;
 
         public ModColor(Random random)
         {
-            m_Random = random;
+            this.random = random;
         }
 
         public Color Pick()
         {
             Color mod;
-            switch (m_Random.Next(3))
+            switch (random.Next(3))
             {
                 case 0:
                     mod = new Color(1.0f, 1.0f, 0.8f, 1.0f);

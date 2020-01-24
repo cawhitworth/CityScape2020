@@ -5,14 +5,14 @@ namespace CityScape2020.Rendering
 {
     class Texture : Component
     {
-        private readonly ShaderResourceView m_TextureView;
-        private readonly SamplerState m_Sampler;
+        private readonly ShaderResourceView textureView;
+        private readonly SamplerState samplerState;
 
         private Texture(Texture2D t2D, Device device)
         {
             Texture2D texture = ToDispose(t2D);
-            m_TextureView = ToDispose(new ShaderResourceView(device, texture));
-            m_Sampler = ToDispose(new SamplerState(device, new SamplerStateDescription
+            textureView = ToDispose(new ShaderResourceView(device, texture));
+            samplerState = ToDispose(new SamplerState(device, new SamplerStateDescription
             {
                 Filter = Filter.MinMagMipLinear,
                 AddressU = TextureAddressMode.Wrap,
@@ -34,8 +34,8 @@ namespace CityScape2020.Rendering
 
         public void Bind(DeviceContext context, int slot)
         {
-            context.PixelShader.SetSampler(slot, m_Sampler);
-            context.PixelShader.SetShaderResource(slot, m_TextureView);
+            context.PixelShader.SetSampler(slot, samplerState);
+            context.PixelShader.SetShaderResource(slot, textureView);
         }
     }
 }

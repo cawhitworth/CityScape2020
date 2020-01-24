@@ -5,40 +5,36 @@ namespace CityScape2020.Buildings
 {
     class StoryCalculator
     {
-        private readonly Size2 m_TextureSize;
-        private readonly Size2 m_WindowSize;
-        private readonly float m_StorySize;
-        private readonly Random m_Random;
+        private readonly Size2 textureSize;
+        private readonly Size2 windowSize;
+        private readonly Random random;
 
         public StoryCalculator(Size2 textureSize, Size2 windowSize, float storySize)
         {
-            m_TextureSize = textureSize;
-            m_WindowSize = windowSize;
-            m_StorySize = storySize;
-            m_Random = new Random();
+            this.textureSize = textureSize;
+            this.windowSize = windowSize;
+            StorySize = storySize;
+            random = new Random();
         }
 
-        public float StorySize
+        public float StorySize { get; }
+
+        public int StoriesX => textureSize.Width / windowSize.Width;
+        public int StoriesY => textureSize.Height / windowSize.Height;
+
+        public Vector2 RandomPosition()
         {
-            get { return m_StorySize; }
+            return new Vector2(random.Next(StoriesX), random.Next(StoriesY));
         }
 
         public float ToTextureX(int stories)
         {
-            return stories*((float)m_WindowSize.Width/m_TextureSize.Width);
+            return stories*((float)windowSize.Width/textureSize.Width);
         }
 
         public float ToTextureY(int stories)
         {
-            return stories*((float)m_WindowSize.Height/m_TextureSize.Height);
-        }
-
-        public int StoriesX { get { return m_TextureSize.Width/m_WindowSize.Width; } }
-        public int StoriesY { get { return m_TextureSize.Height/m_WindowSize.Height; } }
-
-        public Vector2 RandomPosition()
-        {
-            return new Vector2(m_Random.Next(StoriesX), m_Random.Next(StoriesY));
+            return stories*((float)windowSize.Height/textureSize.Height);
         }
 
         public Vector2 ToTexture(Vector2 p)

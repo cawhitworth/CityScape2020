@@ -6,7 +6,7 @@ namespace CityScape2020.Geometry
 {
     class Box : IGeometry
     {
-        private readonly AggregateGeometry m_Aggregate;
+        private readonly AggregateGeometry aggregate;
 
         public Box(Vector3 c1, Vector3 c2)
         {
@@ -23,17 +23,11 @@ namespace CityScape2020.Geometry
             var bottom = new Panel(new Vector3(c2.X, c1.Y, c2.Z), new Vector2(c1.X - c2.X, c1.Z - c2.Z), Panel.Plane.XZ,
                 Panel.Facing.In, origin, origin, mod);
 
-            m_Aggregate = new AggregateGeometry(front, back, right, left, top, bottom);
+            aggregate = new AggregateGeometry(front, back, right, left, top, bottom);
         }
 
-        public IEnumerable<ushort> Indices
-        {
-            get { return m_Aggregate.Indices; }
-        }
+        public IEnumerable<ushort> Indices => aggregate.Indices;
 
-        public IEnumerable<VertexPosNormalTextureMod> Vertices
-        {
-            get { return m_Aggregate.Vertices; }
-        }
+        public IEnumerable<VertexPosNormalTextureMod> Vertices => aggregate.Vertices;
     }
 }

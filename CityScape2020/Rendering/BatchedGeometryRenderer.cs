@@ -11,43 +11,43 @@ namespace CityScape2020.Rendering
 {
     class BatchedGeometryRenderer : Component
     {
-        private readonly Buffer m_Vertices;
-        private readonly Buffer m_Indices;
-        private readonly IGeometryBatcher m_GeometryBatcher;
-        private readonly int m_VertexSize;
-        private readonly InputLayout m_Layout;
+        private readonly Buffer vertices;
+        private readonly Buffer indices;
+        private readonly IGeometryBatcher geometryBatcher;
+        private readonly int vertexSize;
+        private readonly InputLayout inputLayout;
 
         public BatchedGeometryRenderer(IGeometryBatcher batcher, Device device, int vertexSize, InputLayout layout)
         {
-            m_Vertices =
+            vertices =
                 ToDispose(new Buffer(device, vertexSize*batcher.MaxVertexBatchSize, ResourceUsage.Dynamic, BindFlags.VertexBuffer,
                     CpuAccessFlags.Write, ResourceOptionFlags.None, 0));
-            m_Indices = 
+            indices = 
                 ToDispose(new Buffer(device, batcher.MaxIndexBatchSize * 2, ResourceUsage.Dynamic, BindFlags.IndexBuffer, 
                     CpuAccessFlags.Write, ResourceOptionFlags.None, 0));
 
-            m_GeometryBatcher = batcher;
-            m_VertexSize = vertexSize;
-            m_Layout = layout;
+            geometryBatcher = batcher;
+            this.vertexSize = vertexSize;
+            inputLayout = layout;
         }
 
         public int Render(DeviceContext context)
         {
-            context.InputAssembler.InputLayout = m_Layout;
+            context.InputAssembler.InputLayout = inputLayout;
             context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(m_Vertices, m_VertexSize, 0));
-            context.InputAssembler.SetIndexBuffer(m_Indices, Format.R16_UInt, 0);
+            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertices, vertexSize, 0));
+            context.InputAssembler.SetIndexBuffer(indices, Format.R16_UInt, 0);
 
-            return m_GeometryBatcher.VertexBatches.Zip(m_GeometryBatcher.IndexBatches, (vertices, indices) =>
+            return geometryBatcher.VertexBatches.Zip(geometryBatcher.IndexBatches, (vertices, indices) =>
             {
                 DataStream mappedResource;
-                context.MapSubresource(m_Indices, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+                context.MapSubresource(this.indices, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
                 mappedResource.WriteRange(indices);
-                context.UnmapSubresource(m_Indices, 0);
+                context.UnmapSubresource(this.indices, 0);
 
-                context.MapSubresource(m_Vertices, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+                context.MapSubresource(this.vertices, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
                 mappedResource.WriteRange(vertices);
-                context.UnmapSubresource(m_Vertices, 0);
+                context.UnmapSubresource(this.vertices, 0);
 
                 context.DrawIndexed(indices.Count(), 0, 0);
 
