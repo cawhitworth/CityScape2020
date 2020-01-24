@@ -55,7 +55,7 @@ namespace CityScape2020.Buildings
         public Color[] Pixels()
         {
             var pixels = new Color[this.width * this.height];
-            var black = new Color(0);
+            var black = new Color(0x10, 0x10, 0x10, 0x00);
             for (int p = 0; p < this.width * this.height; p++)
             {
                 pixels[p] = black;
@@ -67,7 +67,7 @@ namespace CityScape2020.Buildings
                 for (int y = 0; y < this.height / this.windowHeight; y++)
                 {
                     bool light = this.random.NextDouble() > 0.9;
-                    float shade = (float)this.random.NextDouble() * 0.15f;
+                    float shade = 0.15f + ((float)this.random.NextDouble() * 0.15f);
                     if (light)
                     {
                         shade += 0.75f;
