@@ -50,6 +50,10 @@
     <Compile Include="Buildings\BuildingTexture.cs" />
     <Compile Include="Buildings\ClassicBuilding.cs" />
     <Compile Include="Buildings\ColumnedBuildingBlockBuilder.cs" />
+    <Compile Include="CityPlanning\BuildingBuilder.cs" />
+    <Compile Include="CityPlanning\CityPlanner.cs" />
+    <Compile Include="CityPlanning\Lot.cs" />
+    <Compile Include="CityPlanning\Road.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Buildings\ModColor.cs" />
     <Compile Include="Buildings\StoryCalculator.cs" />
